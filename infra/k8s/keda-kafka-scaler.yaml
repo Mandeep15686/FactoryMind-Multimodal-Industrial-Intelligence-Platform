@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: factorymind-inspection-worker
+spec:
+  scaleTargetRef:
+    name: factorymind-worker
+  minReplicaCount: 0
+  maxReplicaCount: 20
+  cooldownPeriod: 120
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: factorymind-kafka-bootstrap:9092
+        consumerGroup: factorymind-workers
+        topic: factorymind.events
+        lagThreshold: "50"
+        offsetResetPolicy: latest

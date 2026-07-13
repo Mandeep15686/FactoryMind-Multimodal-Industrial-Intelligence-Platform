@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rca-001",
+    "machine_type": "CONVEYOR",
+    "signals": {
+      "visual": "surface crack near drive-end housing",
+      "audio": "bearing_wear signature (0.91)",
+      "sensor": "vibration rising >4kHz, temperature trend up"
+    },
+    "expected_root_cause": "lubrication starvation at the drive-end bearing",
+    "expected_action": "replace bearing SKF-22222-E-C3 and re-grease to 40 Nm",
+    "ground_truth_docs": ["kb-001", "kb-006"]
+  },
+  {
+    "id": "rca-002",
+    "machine_type": "CNC_LATHE",
+    "signals": {
+      "visual": "contamination on machined surface",
+      "audio": "normal",
+      "sensor": "coolant temperature elevated >65C"
+    },
+    "expected_root_cause": "coolant filtration breakdown / pump cavitation",
+    "expected_action": "replace 50-micron filter and inspect pump impeller",
+    "ground_truth_docs": ["kb-002", "kb-008"]
+  },
+  {
+    "id": "rca-003",
+    "machine_type": "PRESS",
+    "signals": {
+      "visual": "none",
+      "audio": "belt_misalignment signature 800Hz-1.2kHz",
+      "sensor": "vibration anomaly"
+    },
+    "expected_root_cause": "belt misalignment causing sheave wear",
+    "expected_action": "laser-align to 0.5 mm and re-tension to 55 Nm",
+    "ground_truth_docs": ["kb-003"]
+  }
+]

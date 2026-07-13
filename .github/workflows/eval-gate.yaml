@@ -1,0 +1,50 @@
+name: Evaluation Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/api/src/agents/**"
+      - "apps/api/src/rag/**"
+      - "packages/prompts/**"
+      - "evals/**"
+
+jobs:
+  eval-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install "./apps/api" ".[dev]" || pip install -e apps/api
+
+      - name: Pull golden datasets (DVC)
+        run: |
+          pip install dvc[s3] || true
+          dvc pull evals/datasets || echo "DVC remote not configured — using committed datasets"
+
+      - name: Run offline evaluation
+        id: eval
+        env:
+          HF_USE_MOCK: "true"
+        run: |
+          python evals/offline_eval_runner.py | tee eval_report.md
+
+      - name: Comment results on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('eval_report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
+
+      - name: Fail if gate not met
+        run: python evals/offline_eval_runner.py

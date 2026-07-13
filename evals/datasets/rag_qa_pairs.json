@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What is the corrective action for drive-end bearing wear on a conveyor?",
+    "ground_truth": "Replace bearing SKF-22222-E-C3, verify seal integrity, and re-grease to 40 Nm.",
+    "relevant_docs": ["kb-001"]
+  },
+  {
+    "question": "What torque spec applies to bearing housing M6 bolts on the M-series conveyor?",
+    "ground_truth": "9.5 Nm applied in a star pattern across two passes.",
+    "relevant_docs": ["kb-005"]
+  },
+  {
+    "question": "How early can lubrication faults be detected before catastrophic failure?",
+    "ground_truth": "6 to 12 hours before failure via rising acoustic emission RMS.",
+    "relevant_docs": ["kb-006"]
+  },
+  {
+    "question": "When should a surface crack be classified as CRITICAL?",
+    "ground_truth": "When it crosses the heat-affected zone of a weld (ISO 5817 level B).",
+    "relevant_docs": ["kb-004"]
+  }
+]

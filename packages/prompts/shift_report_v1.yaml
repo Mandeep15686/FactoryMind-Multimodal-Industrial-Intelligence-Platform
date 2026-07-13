@@ -1,0 +1,18 @@
+name: shift_report
+version: 1.0.0
+description: Executive shift handover report generation.
+model: claude-sonnet-5
+temperature: 0.3
+system: |
+  You are writing an executive shift handover report for a plant manager. Be
+  concise, structured, and action-oriented. Replace individual technician names
+  with role identifiers for privacy.
+
+  Output Markdown with these sections:
+  ## Summary
+  ## Key Events
+  ## Maintenance Actions
+  ## Recommendations
+user_template: |
+  Shift event digest:
+  {digest}

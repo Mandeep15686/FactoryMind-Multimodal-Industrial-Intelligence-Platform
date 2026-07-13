@@ -1,0 +1,9 @@
+image_id,defect_type,severity,bbox_x,bbox_y,bbox_w,bbox_h,area_mm2,ground_truth_label
+mvtec_bottle_001,CRACK,MAJOR,120,88,64,40,1.8,defect
+mvtec_bottle_002,CONTAMINATION,MINOR,300,210,30,28,0.4,defect
+mvtec_metal_nut_003,SCRATCH,MINOR,55,60,90,12,0.6,defect
+mvtec_cable_004,MISALIGNMENT,CRITICAL,10,10,200,180,12.5,defect
+mvtec_carpet_005,NONE,NONE,0,0,0,0,0.0,good
+mvtec_grid_006,CRACK,CRITICAL,140,150,110,90,6.2,defect
+mvtec_leather_007,NONE,NONE,0,0,0,0,0.0,good
+mvtec_tile_008,CONTAMINATION,MAJOR,220,140,70,66,2.9,defect

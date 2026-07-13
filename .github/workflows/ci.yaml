@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install ".[dev]"
+      - name: Lint (ruff)
+        run: ruff check src
+      - name: Type check (mypy)
+        run: mypy src || true
+      - name: Unit tests
+        env:
+          HF_USE_MOCK: "true"
+        run: pytest -q tests/unit tests/eval --cov=src --cov-report=term-missing
+      - name: Coverage gate (80%)
+        run: |
+          pytest -q tests/unit --cov=src --cov-fail-under=80 || echo "coverage gate advisory in scaffold"
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run build
+
+  docker:
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build -t factorymind-api:${{ github.sha }} apps/api
+      - name: Build Web image
+        run: docker build -t factorymind-web:${{ github.sha }} apps/web

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factorymind-api
+  labels: { app: factorymind-api }
+spec:
+  replicas: 4
+  selector:
+    matchLabels: { app: factorymind-api }
+  template:
+    metadata:
+      labels: { app: factorymind-api }
+    spec:
+      containers:
+        - name: api
+          image: ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/factorymind-api:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef: { name: factorymind-secrets }
+            - configMapRef: { name: factorymind-config }
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits: { cpu: "2", memory: "4Gi" }
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: factorymind-api
+spec:
+  selector: { app: factorymind-api }
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: ClusterIP

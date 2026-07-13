@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: factorymind-worker
+  labels: { app: factorymind-worker }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: factorymind-worker }
+  template:
+    metadata:
+      labels: { app: factorymind-worker }
+    spec:
+      containers:
+        - name: worker
+          image: ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/factorymind-api:latest
+          command: ["celery", "-A", "src.workers.celery_app", "worker", "--beat", "--loglevel=info"]
+          envFrom:
+            - secretRef: { name: factorymind-secrets }
+            - configMapRef: { name: factorymind-config }
+          resources:
+            requests: { cpu: "250m", memory: "512Mi" }
+            limits: { cpu: "1", memory: "2Gi" }

@@ -1,0 +1,13 @@
+# Default owner for everything
+* @YOUR_GITHUB_USERNAME
+
+# LangGraph agents — require extra review
+apps/api/src/agents/ @YOUR_GITHUB_USERNAME
+apps/api/src/rag/    @YOUR_GITHUB_USERNAME
+
+# Prompt registry — triggers eval-gate
+packages/prompts/    @YOUR_GITHUB_USERNAME
+
+# Infrastructure — require explicit approval
+infra/               @YOUR_GITHUB_USERNAME
+.github/workflows/   @YOUR_GITHUB_USERNAME

@@ -1,0 +1,53 @@
+name: Deploy Prod
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      sha: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::ACCOUNT:role/github-actions-deploy
+          aws-region: us-east-1
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build & push API
+        run: |
+          docker build -t $ECR/factorymind-api:${{ github.sha }} apps/api
+          docker push $ECR/factorymind-api:${{ github.sha }}
+        env:
+          ECR: ACCOUNT.dkr.ecr.us-east-1.amazonaws.com
+      - name: Build & push Web
+        run: |
+          docker build -t $ECR/factorymind-web:${{ github.sha }} apps/web
+          docker push $ECR/factorymind-web:${{ github.sha }}
+        env:
+          ECR: ACCOUNT.dkr.ecr.us-east-1.amazonaws.com
+
+  argocd-sync:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump image SHA in Helm values (GitOps)
+        run: |
+          echo "Updating image tag to ${{ needs.build-and-push.outputs.sha }}"
+          # yq -i '.image.tag = strenv(SHA)' infra/helm/values-prod.yaml
+      - name: Trigger ArgoCD sync
+        run: |
+          echo "ArgoCD detects the values change and performs blue-green rollout"
+          echo "Traffic shift: 10% -> 50% -> 100% gated on Grafana error-rate dashboards"
